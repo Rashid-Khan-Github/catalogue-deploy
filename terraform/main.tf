@@ -16,7 +16,7 @@ module "catalogue_instance" {
 }
 
 
-resource "null_resource" "null_res" {
+resource "null_resource" "cluster" {
   # Changes to any instance of the cluster requires re-provisioning
   triggers = {
     instance_id = module.catalogue_instance.id
@@ -25,26 +25,63 @@ resource "null_resource" "null_res" {
   # Bootstrap script can run on any instance of the cluster
   # So we just choose the first in this case
   connection {
-    type = "ssh"
-    user = "centos"
+    type     = "ssh"
+    user     = "centos"
     password = "DevOps321"
-    host = module.catalogue_instance.private_ip
+    host     = module.catalogue_instance.private_ip
   }
 
   # copy the file
   provisioner "file" {
-    source = "catalogue.sh"
+    source      = "catalogue.sh"
     destination = "/tmp/catalogue.sh"
   }
 
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
-        "chmod +x /tmp/catalogue.sh",
-        "sudo sh /tmp.catalogue.sh ${var.app_version}"
+      "sudo chmod +x /tmp/catalogue.sh",
+      "sudo sh /tmp/catalogue.sh ${var.app_version}"
     ]
   }
 }
+
+
+resource "aws_ec2_instance_state" "ec2_state" {
+  instance_id = module.catalogue_instance.id
+  state       = "stopped"
+}
+
+resource "aws_ami_from_instance" "catalogue_ami" {
+  name = "${var.common_tags.Component}-${var.env}-${local.current_time}"
+  source_instance_id = module.catalogue_instance.id
+}
+
+resource "null_resource" "delete_instance" {
+  triggers = {
+    ami_id = aws_ami_from_instance.catalogue_ami.id
+  }
+
+  provisioner "local-exec" {
+    command = "aws ec2 terminate-instances --instance-ids ${module.catalogue_instance.id}"
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 output "app_version" {
   value = var.app_version

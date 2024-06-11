@@ -2,8 +2,6 @@
 
 APP_VERSION=$1
 echo "app_version: $APP_VERSION"
-
-sudo su
 yum install python3-devel python3-pip -y
 pip3 install ansible botocore boto3
 cd /tmp
