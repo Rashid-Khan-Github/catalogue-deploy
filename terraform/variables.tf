@@ -15,6 +15,10 @@ variable "env" {
   default = "dev"
 }
 
+variable "domain_name" {
+  default = "bsebregistration.com"
+}
+
 
 variable "app_version" {
   default = "100.100.100.101"

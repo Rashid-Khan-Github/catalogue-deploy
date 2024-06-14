@@ -3,5 +3,5 @@ locals {
 }
 
 locals {
-  current_time = formatdate("YYYY-MM-DD-hh:mm:ss", timestamp())
+  current_time = formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())
 }
