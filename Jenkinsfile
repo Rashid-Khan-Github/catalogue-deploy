@@ -6,9 +6,9 @@ pipeline{
         }
     }
 
-    options {
-        ansiColor('xterm')
-    }
+    // options {
+    //     ansiColor('xterm')
+    // }
 
     parameters {
         string(name: 'version', defaultValue: '1.0.1', description: 'Which version to deploy')
@@ -33,16 +33,34 @@ pipeline{
             }
         }
 
-        stage('Deployment') {
+        stage('Plan') {
             steps{
                 sh """
                     cd terraform
                     terraform plan -var="app_version=${params.version}"
                 """
             }
+        }
+
+         stage('Approve') {
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+                submitter "Rashid"
             }
         }
+
+         stage('Apply') {
+            steps{
+                sh """
+                    cd terraform
+                    terraform apply -auto-approve -var="app_version=${params.version}"
+                """
+            }
+        }
+        
     }
+
 
     post{
         always{
@@ -50,10 +68,5 @@ pipeline{
             deleteDir()
         }
     }
-
-
-
-
-
 
 }
