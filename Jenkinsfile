@@ -6,12 +6,13 @@ pipeline{
         }
     }
 
-    // options {
-    //     ansiColor('xterm')
-    // }
+    options {
+        ansiColor('xterm')
+    }
 
     parameters {
-        string(name: 'version', defaultValue: '1.0.1', description: 'Which version to deploy')
+        string(name: 'version', defaultValue: '1.0.1', description: 'Which version to deploy ?')
+        string(name: 'environment', defaultValue: 'dev', description: 'Which environment to deploy ?')
     }
 
     stages{
@@ -28,7 +29,8 @@ pipeline{
             steps{
                 sh """
                     cd terraform
-                    terraform init -reconfigure
+                    terraform init -backend-config=${params.environment}/backend.tf -reconfigure
+                    terraform init -backend-config=${params.environment}/backend.tf -reconfigure
                 """
             }
         }
@@ -37,7 +39,7 @@ pipeline{
             steps{
                 sh """
                     cd terraform
-                    terraform plan -var="app_version=${params.version}"
+                    terraform plan -var-file=${params.environment}/dev.tfvars -var="app_version=${params.version} -var="env=${params.environment}"
                 """
             }
         }
@@ -48,16 +50,13 @@ pipeline{
                 ok "Yes, we should."
                 submitter "Rashid"
             }
-             steps{
-                echo "Approval Done"
-            }
         }
 
          stage('Apply') {
             steps{
                 sh """
                     cd terraform
-                    terraform apply -auto-approve -var="app_version=${params.version}"
+                    terraform apply -auto-approve -var-file=${params.environment}/dev.tfvars -var="app_version=${params.version} -var="env=${params.environment}"
                 """
             }
         }
@@ -71,5 +70,9 @@ pipeline{
             deleteDir()
         }
     }
+
+
+
+
 
 }

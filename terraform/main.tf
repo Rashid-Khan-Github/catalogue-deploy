@@ -6,6 +6,7 @@ module "catalogue_instance" {
   # It should be in Private Subnet
   subnet_id = local.private_subnet_id
   # user_data = file("catalogue.sh")
+  iam_instance_profile = "catalogue-profile"
 
   tags = merge(
     {
