@@ -29,6 +29,7 @@ pipeline{
             steps{
                 sh """
                     cd terraform
+                    ls -l
                     terraform init -backend-config=${params.environment}/backend.tf -reconfigure
                 """
             }
@@ -38,6 +39,7 @@ pipeline{
             steps{
                 sh """
                     cd terraform
+                    ls -l
                     terraform plan -var-file=${params.environment}/${params.environment}.tfvars -var="app_version=${params.version}" -var="env=${params.environment}"
                 """
             }
