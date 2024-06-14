@@ -50,6 +50,9 @@ pipeline{
                 ok "Yes, we should."
                 submitter "Rashid"
             }
+            steps{
+                echo "Approval Done"
+            }
         }
 
          stage('Apply') {
