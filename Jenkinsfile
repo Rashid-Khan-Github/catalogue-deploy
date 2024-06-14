@@ -45,7 +45,7 @@ pipeline{
             }
         }
 
-         stage('Approve') {
+        stage('Approve') {
             input {
                 message "Should we continue?"
                 ok "Yes, we should."
@@ -56,7 +56,7 @@ pipeline{
             }
         }
 
-         stage('Apply') {
+        stage('Apply') {
             steps{
                 sh """
                     cd terraform
@@ -74,9 +74,6 @@ pipeline{
             // deleteDir()
         }
     }
-
-
-
 
 
 }
